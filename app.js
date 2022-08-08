@@ -6,15 +6,16 @@ const mongoose = require('mongoose');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 
-const userID = require('./utils/userID');
-
 const { PORT = 3000 } = process.env;
 
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(userID);
+app.use((req, res, next) => {
+  req.user = { _id: '62ef698596489b1f9f94e8ad' };
+  next();
+});
 app.use(usersRouter);
 app.use(cardsRouter);
 
