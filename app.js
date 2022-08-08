@@ -1,25 +1,28 @@
 const express = require('express');
-// Слушаем 3000 порт
-const { PORT = 3000 } = process.env;
+const bodyParser = require('body-parser');
+
 const mongoose = require('mongoose');
+
+const usersRouter = require('./routes/users');
+const cardsRouter = require('./routes/cards');
+
+const userID = require('./utils/userID');
+
+const { PORT = 3000 } = process.env;
+
 const app = express();
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {
-  useNewUrlParser: true,
-});
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(userID);
+app.use(usersRouter);
+app.use(cardsRouter);
 
-app.listen(PORT, () => {
-  // Если всё работает, консоль покажет, какой порт приложение слушает
-  console.log(`App listening on port ${PORT}`);
-});
-app.get('/', (req, res) => {
-  res.send(
-    `<html>
-        <body>
-            <p>Ответ на сигнал из космоса</p>
-        </body>
-     </html>`,
-  );
-});
+async function main() {
+  await mongoose.connect('mongodb://localhost:27017/mestodb');
+  app.listen(PORT, () => {
+    console.log(`App listening on port ${PORT}`); // eslint-disable-line
+  });
+}
 
-
+main();
