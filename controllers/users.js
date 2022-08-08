@@ -8,11 +8,18 @@ module.exports.getUsers = (req, res) => {
 
 module.exports.getUser = (req, res) => {
   User.findById(req.params.userId)
-    .then((user) => res.send({ data: user }))
+    .then((user) => {
+      if (!user) {
+        res
+          .status(404)
+          .send({ message: 'Запрашиваемый пользователь не найден.' });
+      }
+      res.send({ data: user });
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
         res
-          .status(404)
+          .status(400)
           .send({ message: 'Запрашиваемый пользователь не найден.' });
       } else {
         res.status(500).send({ message: `Произошла ошибка: ${err.message}` });
