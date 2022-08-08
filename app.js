@@ -18,6 +18,9 @@ app.use((req, res, next) => {
 });
 app.use(usersRouter);
 app.use(cardsRouter);
+app.get('*', (req, res) => {
+  res.status(404).send({ message: 'По данному пути нет ничего' });
+});
 
 async function main() {
   await mongoose.connect('mongodb://localhost:27017/mestodb');
