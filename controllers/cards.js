@@ -32,7 +32,7 @@ module.exports.deleteCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'некорректный id карточки' });
+        res.status(400).send({ message: 'Некорректный id карточки' });
       } else {
         res.status(500).send({ message: `Произошла ошибка: ${err.message}` });
       }
@@ -54,7 +54,7 @@ module.exports.likeCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'некорректный id карточки' });
+        res.status(400).send({ message: 'Некорректный id карточки' });
       } else {
         res.status(500).send({ message: `Произошла ошибка: ${err.message}` });
       }
@@ -76,7 +76,7 @@ module.exports.dislikeCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'некорректный id карточки' });
+        res.status(400).send({ message: 'Некорректный id карточки' });
       } else {
         res.status(500).send({ message: `Произошла ошибка: ${err.message}` });
       }

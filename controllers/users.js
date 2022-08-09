@@ -1,29 +1,31 @@
 const User = require('../models/user');
 
+const {
+  ERROR_CODE,
+  ERROR_NOT_FOUND,
+  ERROR_DEFAULT,
+  ERROR_CODE_MESSAGE,
+  ERROR_NOT_FOUND_MESSAGE,
+  ERROR_DEFAULT_MESSAGE,
+} = require('../utils/errors');
+
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(() => res.status(ERROR_DEFAULT).send(ERROR_DEFAULT_MESSAGE));
 };
 
 module.exports.getUser = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
-      if (!user) {
-        res
-          .status(404)
-          .send({ message: 'Запрашиваемый пользователь не найден.' });
-      }
-      res.send({ data: user });
+      !user // eslint-disable-line
+        ? res.status(ERROR_NOT_FOUND).send(ERROR_NOT_FOUND_MESSAGE)
+        : res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        res
-          .status(400)
-          .send({ message: 'Запрашиваемый пользователь не найден.' });
-      } else {
-        res.status(500).send({ message: `Произошла ошибка: ${err.message}` });
-      }
+      err.name === 'CastError' // eslint-disable-line
+        ? res.status(ERROR_CODE).send(ERROR_CODE_MESSAGE)
+        : res.status(ERROR_DEFAULT).send(ERROR_DEFAULT_MESSAGE);
     });
 };
 
@@ -32,11 +34,9 @@ module.exports.createUser = (req, res) => {
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные ' });
-      } else {
-        res.status(500).send({ message: `Произошла ошибка: ${err.message}` });
-      }
+      err.name === 'ValidationError' // eslint-disable-line
+        ? res.status(ERROR_CODE).send(ERROR_CODE_MESSAGE)
+        : res.status(ERROR_DEFAULT).send(ERROR_DEFAULT_MESSAGE);
     });
 };
 
@@ -51,11 +51,9 @@ module.exports.updateProfile = (req, res) => {
   )
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные ' });
-      } else {
-        res.status(500).send({ message: `Произошла ошибка: ${err.message}` });
-      }
+      err.name === 'ValidationError' // eslint-disable-line
+        ? res.status(ERROR_CODE).send(ERROR_CODE_MESSAGE)
+        : res.status(ERROR_DEFAULT).send(ERROR_DEFAULT_MESSAGE);
     });
 };
 
@@ -70,10 +68,8 @@ module.exports.updateAvatar = (req, res) => {
   )
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные ' });
-      } else {
-        res.status(500).send({ message: `Произошла ошибка: ${err.message}` });
-      }
+      err.name === 'ValidationError' // eslint-disable-line
+        ? res.status(ERROR_CODE).send(ERROR_CODE_MESSAGE)
+        : res.status(ERROR_DEFAULT).send(ERROR_DEFAULT_MESSAGE);
     });
 };
