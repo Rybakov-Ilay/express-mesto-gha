@@ -1,9 +1,18 @@
 const Card = require('../models/card');
 
+const {
+  ERROR_CODE,
+  ERROR_NOT_FOUND,
+  ERROR_DEFAULT,
+  ERROR_CODE_MESSAGE,
+  ERROR_NOT_FOUND_MESSAGE,
+  ERROR_DEFAULT_MESSAGE,
+} = require('../utils/errors');
+
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка: ${err.message}` }));
+    .catch((err) => res.status(ERROR_DEFAULT).send(ERROR_DEFAULT_MESSAGE)); // eslint-disable-line
 };
 
 module.exports.createCard = (req, res) => {
@@ -13,29 +22,23 @@ module.exports.createCard = (req, res) => {
   Card.create({ name, link, owner })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные ' });
-      } else {
-        res.status(500).send({ message: `Произошла ошибка: ${err.message}` });
-      }
+      err.name === 'ValidationError' // eslint-disable-line
+        ? res.status(ERROR_CODE).send(ERROR_CODE_MESSAGE)
+        : res.status(ERROR_DEFAULT).send(ERROR_DEFAULT_MESSAGE);
     });
 };
 
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
-      if (!card) {
-        res.status(404).send({ message: 'По такому id карточка не найдена' });
-      } else {
-        res.send({ data: card });
-      }
+      !card // eslint-disable-line
+        ? res.status(ERROR_NOT_FOUND).send(ERROR_NOT_FOUND_MESSAGE)
+        : res.send({ data: card });
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Некорректный id карточки' });
-      } else {
-        res.status(500).send({ message: `Произошла ошибка: ${err.message}` });
-      }
+      err.name === 'CastError' // eslint-disable-line
+        ? res.status(ERROR_CODE).send(ERROR_CODE_MESSAGE)
+        : res.status(ERROR_DEFAULT).send(ERROR_DEFAULT_MESSAGE);
     });
 };
 
@@ -46,18 +49,14 @@ module.exports.likeCard = (req, res) => {
     { new: true },
   )
     .then((card) => {
-      if (!card) {
-        res.status(404).send({ message: 'По такому id карточка не найдена' });
-      } else {
-        res.send({ data: card });
-      }
+      !card // eslint-disable-line
+        ? res.status(ERROR_NOT_FOUND).send(ERROR_NOT_FOUND_MESSAGE)
+        : res.send({ data: card });
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Некорректный id карточки' });
-      } else {
-        res.status(500).send({ message: `Произошла ошибка: ${err.message}` });
-      }
+      err.name === 'CastError' // eslint-disable-line
+        ? res.status(ERROR_CODE).send(ERROR_CODE_MESSAGE)
+        : res.status(ERROR_DEFAULT).send(ERROR_DEFAULT_MESSAGE);
     });
 };
 
@@ -68,17 +67,13 @@ module.exports.dislikeCard = (req, res) => {
     { new: true },
   )
     .then((card) => {
-      if (!card) {
-        res.status(404).send({ message: 'По такому id карточка не найдена' });
-      } else {
-        res.send({ data: card });
-      }
+      !card // eslint-disable-line
+        ? res.status(ERROR_NOT_FOUND).send(ERROR_NOT_FOUND_MESSAGE)
+        : res.send({ data: card });
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Некорректный id карточки' });
-      } else {
-        res.status(500).send({ message: `Произошла ошибка: ${err.message}` });
-      }
+      err.name === 'CastError' // eslint-disable-line
+        ? res.status(ERROR_CODE).send(ERROR_CODE_MESSAGE)
+        : res.status(ERROR_DEFAULT).send(ERROR_DEFAULT_MESSAGE);
     });
 };
