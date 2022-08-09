@@ -14,6 +14,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use((req, res, next) => {
   req.user = { _id: '62ef698596489b1f9f94e8ad' };
+
   next();
 });
 app.use(usersRouter);
