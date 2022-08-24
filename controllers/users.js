@@ -1,75 +1,122 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
 const User = require('../models/user');
 
-const {
-  ERROR_CODE,
-  ERROR_NOT_FOUND,
-  ERROR_DEFAULT,
-  ERROR_CODE_MESSAGE,
-  ERROR_NOT_FOUND_MESSAGE,
-  ERROR_DEFAULT_MESSAGE,
-} = require('../utils/errors');
+const { NODE_ENV, JWT_SECRET } = process.env;
 
-module.exports.getUsers = (req, res) => {
+const { NotFoundError } = require('../erorrs/NotFoundError');
+const { BadRequestError } = require('../erorrs/BadRequestError');
+const { ConflictError } = require('../erorrs/ConflictError');
+
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(ERROR_DEFAULT).send(ERROR_DEFAULT_MESSAGE));
+    .catch(next);
 };
 
-module.exports.getUser = (req, res) => {
+module.exports.getUser = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       !user // eslint-disable-line
-        ? res.status(ERROR_NOT_FOUND).send(ERROR_NOT_FOUND_MESSAGE)
+        ? next(new NotFoundError('Пользователь по указанному _id не найден'))
         : res.send({ data: user });
     })
     .catch((err) => {
       err.name === 'CastError' // eslint-disable-line
-        ? res.status(ERROR_CODE).send(ERROR_CODE_MESSAGE)
-        : res.status(ERROR_DEFAULT).send(ERROR_DEFAULT_MESSAGE);
+        ? next(new BadRequestError('Переданы некорректные данные'))
+        : next(err);
     });
 };
 
-module.exports.createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
+module.exports.createUser = (req, res, next) => {
+  const { email, password, name, about, avatar } = req.body; // eslint-disable-line
+
+  User.findOne({ email })
+    .then((user) => {
+      if (user) {
+        throw new ConflictError('Такой email уже есть');
+      } else {
+        return bcrypt.hash(password, 10);
+      }
+    })
+    .then((hash) => User.create({ name, about, avatar, email, password: hash })) // eslint-disable-line
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       err.name === 'ValidationError' // eslint-disable-line
-        ? res.status(ERROR_CODE).send(ERROR_CODE_MESSAGE)
-        : res.status(ERROR_DEFAULT).send(ERROR_DEFAULT_MESSAGE);
+        ? next(new BadRequestError('Переданы некорректные данные'))
+        : next(err);
     });
 };
 
-module.exports.updateProfile = (req, res) => {
+module.exports.login = (req, res, next) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign(
+        { _id: user._id }, // eslint-disable-line
+        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+        { expiresIn: '7d' },
+      );
+
+      res
+        .cookie('jwt', token, {
+          maxAge: 3600000 * 24 * 7,
+          httpOnly: true,
+        })
+        .send({
+          message: `Аутентификация прошла успешно. Ваш токен: ${token}`,
+        });
+    })
+    .catch(next);
+};
+
+module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
   const id = req.user._id;
 
   User.findOneAndUpdate(
-    { _id: id },
+    { _id: id }, // eslint-disable-line
     { name: name, about: about }, // eslint-disable-line
     { new: true, runValidators: true },
   )
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       err.name === 'ValidationError' // eslint-disable-line
-        ? res.status(ERROR_CODE).send(ERROR_CODE_MESSAGE)
-        : res.status(ERROR_DEFAULT).send(ERROR_DEFAULT_MESSAGE);
+        ? next(new BadRequestError('Переданы некорректные данные'))
+        : next(err);
     });
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   const id = req.user._id;
 
   User.findOneAndUpdate(
-    { _id: id },
+    { _id: id }, // eslint-disable-line
     { avatar: avatar }, // eslint-disable-line
-    { new: true, runValidators: true },
+    { new: true, runValidators: true }, // eslint-disable-line
   )
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       err.name === 'ValidationError' // eslint-disable-line
-        ? res.status(ERROR_CODE).send(ERROR_CODE_MESSAGE)
-        : res.status(ERROR_DEFAULT).send(ERROR_DEFAULT_MESSAGE);
+        ? next(new BadRequestError('Переданы некорректные данные'))
+        : next(err);
+    });
+};
+
+module.exports.getCurrentUser = (req, res, next) => {
+  User.findById(req.user._id)
+    .select('+password')
+    .then((user) => {
+      !user // eslint-disable-line
+        ? next(new NotFoundError('Пользователь с указанным _id не найден'))
+        : res.send({ data: user });
+    })
+    .catch((err) => {
+      err.name === 'CastError' // eslint-disable-line
+        ? next(new BadRequestError('Переданы некорректные данные'))
+        : next(err);
     });
 };
