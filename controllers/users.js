@@ -46,7 +46,6 @@ module.exports.createUser = (req, res, next) => {
         name: user.name,
         about: user.about,
         avatar: user.avatar,
-        password: password, // eslint-disable-line
       });
     })
     .catch((err) => {
