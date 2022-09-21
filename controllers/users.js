@@ -40,7 +40,15 @@ module.exports.createUser = (req, res, next) => {
       }
     })
     .then((hash) => User.create({ name, about, avatar, email, password: hash })) // eslint-disable-line
-    .then((user) => res.send({ data: user }))
+    .then((user) => {
+      res.send({
+        email: user.email,
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        password: password
+      })}
+    )
     .catch((err) => {
       err.name === 'ValidationError' // eslint-disable-line
         ? next(new BadRequestError('Переданы некорректные данные'))
