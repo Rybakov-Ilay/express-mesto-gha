@@ -108,7 +108,6 @@ module.exports.updateAvatar = (req, res, next) => {
 
 module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
-    .select('+password')
     .then((user) => {
       !user // eslint-disable-line
         ? next(new NotFoundError('Пользователь с указанным _id не найден'))
