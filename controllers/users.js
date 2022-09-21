@@ -46,9 +46,9 @@ module.exports.createUser = (req, res, next) => {
         name: user.name,
         about: user.about,
         avatar: user.avatar,
-        password: password
-      })}
-    )
+        password: password, // eslint-disable-line
+      });
+    })
     .catch((err) => {
       err.name === 'ValidationError' // eslint-disable-line
         ? next(new BadRequestError('Переданы некорректные данные'))
