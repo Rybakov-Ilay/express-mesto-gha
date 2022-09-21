@@ -37,6 +37,7 @@ module.exports.createUser = (req, res, next) => {
       if (user) {
         throw new ConflictError('Такой email уже есть');
       } else {
+        console.log(bcrypt.hash(password, 10));
         return bcrypt.hash(password, 10);
       }
     })
@@ -51,21 +52,17 @@ module.exports.createUser = (req, res, next) => {
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
+  console.log(req.body);
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
+      console.log(user);
       const token = jwt.sign(
         { _id: user._id }, // eslint-disable-line
         NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
         { expiresIn: '7d' },
       );
-
-      res
-        .cookie('jwt', token, {
-          maxAge: 3600000 * 24 * 7,
-          httpOnly: true,
-        })
-        .send({
+      res.send({
           message: `Аутентификация прошла успешно. Ваш токен: ${token}`,
         });
     })
