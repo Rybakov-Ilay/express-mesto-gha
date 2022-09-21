@@ -1,6 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
+const { celebrate, Joi } = require('celebrate');
+const { errors } = require('celebrate');
 
 const mongoose = require('mongoose');
 
@@ -19,10 +21,29 @@ app.use(bodyParser.json());
 
 app.post(
   '/signin',
+  celebrate({
+    body: Joi.object().keys({
+      email: Joi.string().required().email(),
+      password: Joi.string().required(),
+    }),
+  }),
   login,
 );
 app.post(
   '/signup',
+  celebrate({
+    body: Joi.object().keys({
+      email: Joi.string().required().email(),
+      password: Joi.string().required(),
+      name: Joi.string().min(2).max(30),
+      about: Joi.string().min(2).max(30),
+      avatar: Joi.string()
+        .uri()
+        .regex(
+          /https?:\/\/(www.)?[\w\-.~:/?#[\]@!$&'()*+,;=]{1,256}\.[a-z0-9]{2,6}\b([-\w()@:%.+~#=//?&]*)/,
+        ),
+    }),
+  }),
   createUser,
 );
 app.use(auth);
@@ -32,6 +53,7 @@ app.use(cardsRouter);
 app.patch('*', (req, res) => {
   res.status(404).send({ message: 'По данному пути нет ничего' });
 });
+app.use(errors());
 app.use(defaultErrorHandler);
 
 async function main() {
