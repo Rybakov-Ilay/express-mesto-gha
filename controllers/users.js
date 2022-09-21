@@ -31,7 +31,6 @@ module.exports.getUser = (req, res, next) => {
 
 module.exports.createUser = (req, res, next) => {
   const { email, password, name, about, avatar } = req.body; // eslint-disable-line
-
   User.findOne({ email })
     .then((user) => {
       if (user) {
