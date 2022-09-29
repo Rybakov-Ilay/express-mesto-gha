@@ -24,24 +24,23 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  Card.findById(req.params.cardId)
-    .then((card) => {
-      if (!card) {
-        // eslint-disable-line
-        return next(new NotFoundError('Карточка по указанному _id не найдена'));
-      }
-      if (req.user._id !== card.owner) {
-        return next(new ForbiddenError('Вы не можете удалить чужую карточку'));
-      }
-      return card;
-    })
-    .then((card) => Card.findByIdAndRemove(card._id.toString()))
-    .then((card) => res.send({ card }))
-    .catch((err) => {
-      err.name === 'CastError' // eslint-disable-line
-        ? next(new BadRequestError('Переданы некорректные данные'))
-        : next(err);
-    });
+  Card.findById(req.params.cardId).then((card) => { // eslint-disable-line
+    if (!card) {
+      // eslint-disable-line
+      return next(new NotFoundError('Карточка по указанному _id не найдена'));
+    }
+    if (req.user._id === card.owner) {
+      Card.findByIdAndRemove(card._id.toString())
+        .then((card) => res.send({ card })) // eslint-disable-line
+        .catch((err) => {
+          err.name === 'CastError' // eslint-disable-line
+            ? next(new BadRequestError('Переданы некорректные данные'))
+            : next(err);
+        });
+    } else {
+      next(new ForbiddenError('Нельзя удалить не свою карточку'));
+    }
+  });
 };
 
 module.exports.likeCard = (req, res, next) => {
