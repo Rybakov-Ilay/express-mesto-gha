@@ -69,12 +69,9 @@ module.exports.login = (req, res, next) => {
       res.cookie('jwt', token, {
         maxAge: 3600000 * 24 * 7,
         httpOnly: true,
-        sameSite: true, // кука доступна только на одной хостинге
+        sameSite: true,
       });
-
-      res.send({
-        message: `Аутентификация прошла успешно. Ваш токен: ${token}`,
-      });
+      return res.send({ token });
     })
     .catch(next);
 };
