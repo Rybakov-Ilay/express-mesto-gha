@@ -71,7 +71,8 @@ module.exports.login = (req, res, next) => {
         httpOnly: true,
         sameSite: true,
       });
-      return res.send({ token });
+
+      return res.send({ token: req.cookies.jwt });
     })
     .catch(next);
 };

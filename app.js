@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { celebrate, Joi } = require('celebrate');
 const { errors } = require('celebrate');
+const cookieParser = require('cookie-parser');
 
 const mongoose = require('mongoose');
 
@@ -18,6 +19,7 @@ const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 app.post(
   '/signin',
