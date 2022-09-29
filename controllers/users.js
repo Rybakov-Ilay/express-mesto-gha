@@ -72,7 +72,7 @@ module.exports.login = (req, res, next) => {
         sameSite: true,
       });
 
-      return res.send({ token: req.cookies.jwt });
+      return res.send({ token });
     })
     .catch(next);
 };
