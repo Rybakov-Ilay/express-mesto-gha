@@ -29,7 +29,7 @@ module.exports.deleteCard = (req, res, next) => {
       // eslint-disable-line
       return next(new NotFoundError('Карточка по указанному _id не найдена'));
     }
-    if (req.user._id === card.owner) {
+    if (req.user._id === card.owner._id.toString()) {
       Card.findByIdAndRemove(card._id.toString())
         .then((card) => res.send({ card })) // eslint-disable-line
         .catch((err) => {
