@@ -44,7 +44,6 @@ userSchema.statics.findUserByCredentials = function (email, password) { // eslin
       if (!matched) {
         throw new UnauthorizedError('Неправильные почта или пароль');
       }
-
       return user;
     });
   });

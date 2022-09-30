@@ -23,7 +23,7 @@ router.delete(
       cardId: Joi.string().length(24).hex().required(),
     }),
   }),
-  deleteCard,
+  deleteCard
 );
 router.post(
   '/cards',
@@ -34,11 +34,11 @@ router.post(
         .required()
         .uri()
         .regex(
-          /https?:\/\/(www.)?[\w\-.~:/?#[\]@!$&'()*+,;=]{1,256}\.[a-z0-9]{2,6}\b([-\w()@:%.+~#=//?&]*)/ // eslint-disable-line
+          /^https?:\/\/(www.)?[a-zA-Z0-9-.]+\.[a-zA-Z]{2,}([a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]+)*#*$/ // eslint-disable-line
         ),
     }),
   }),
-  createCard,
+  createCard
 );
 router.put(
   '/cards/:cardId/likes',
@@ -47,7 +47,7 @@ router.put(
       cardId: Joi.string().length(24).hex().required(),
     }),
   }),
-  likeCard,
+  likeCard
 );
 router.delete(
   '/cards/:cardId/likes',
@@ -56,7 +56,7 @@ router.delete(
       cardId: Joi.string().length(24).hex().required(),
     }),
   }),
-  dislikeCard,
+  dislikeCard
 );
 
 module.exports = router;

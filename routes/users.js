@@ -42,7 +42,7 @@ router.patch(
         .uri()
         .required()
         .regex(
-          /https?:\/\/(www.)?[\w\-.~:/?#[\]@!$&'()*+,;=]{1,256}\.[a-z0-9]{2,6}\b([-\w()@:%.+~#=//?&]*)/ // eslint-disable-line
+          /^https?:\/\/(www.)?[a-zA-Z0-9-.]+\.[a-zA-Z]{2,}([a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]+)*#*$/ // eslint-disable-line
         ),
     }),
   }),
