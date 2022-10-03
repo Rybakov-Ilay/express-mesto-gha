@@ -40,7 +40,8 @@ module.exports.deleteCard = (req, res, next) => {
     } else {
       next(new ForbiddenError('Нельзя удалить не свою карточку'));
     }
-  });
+  })
+    .catch(next);
 };
 
 module.exports.likeCard = (req, res, next) => {
