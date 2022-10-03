@@ -54,7 +54,8 @@ module.exports.createUser = (req, res, next) => {
           next(new BadRequestError('Переданы некорректные данные'));
         } else next(err);
       }),
-  ); // eslint-disable-line
+  )
+    .catch(next); // eslint-disable-line
 };
 
 module.exports.login = (req, res, next) => {
