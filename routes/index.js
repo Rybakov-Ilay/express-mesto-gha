@@ -11,6 +11,9 @@ const {
 
 router.post('/signin', validateUserBody, login);
 router.post('/signup', validateAuthentication, createUser);
+router.get('/signout', (req, res) => {
+  res.clearCookie('jwt').send({ message: 'Выход' });
+});
 router.use(auth);
 router.use(usersRouter);
 router.use(cardsRouter);
