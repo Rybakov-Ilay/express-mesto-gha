@@ -54,7 +54,7 @@ app.use(auth);
 app.use(usersRouter);
 app.use(cardsRouter);
 
-app.use((req, res, next) => next(new NotFoundError('По данному пути нет ничего')));
+app.use((req, res, next) => next(new NotFoundError('По данному пути ничего нет')));
 app.use(errors());
 app.use(defaultErrorHandler);
 
