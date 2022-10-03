@@ -14,6 +14,7 @@ const {
   dislikeCard,
   likeCard,
 } = require('../controllers/cards');
+const { REG_EXP_LINK } = require('../utils/reg-exp');
 
 router.get('/cards', getCards);
 router.delete(
@@ -30,12 +31,7 @@ router.post(
   celebrate({
     body: Joi.object().keys({
       name: Joi.string().required().min(2).max(30),
-      link: Joi.string()
-        .required()
-        .uri()
-        .regex(
-          /^https?:\/\/(www.)?[a-zA-Z0-9-.]+\.[a-zA-Z]{2,}([a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]+)*#*$/ // eslint-disable-line
-        ),
+      link: Joi.string().required().uri().regex(REG_EXP_LINK),
     }),
   }),
   createCard,

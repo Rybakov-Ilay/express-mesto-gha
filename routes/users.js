@@ -14,6 +14,7 @@ const {
   updateProfile,
   getCurrentUser,
 } = require('../controllers/users');
+const { REG_EXP_LINK } = require('../utils/reg-exp');
 
 router.get('/users', getUsers);
 router.get('/users/me', getCurrentUser);
@@ -38,12 +39,7 @@ router.patch(
   '/users/me/avatar',
   celebrate({
     body: Joi.object().keys({
-      avatar: Joi.string()
-        .uri()
-        .required()
-        .regex(
-          /^https?:\/\/(www.)?[a-zA-Z0-9-.]+\.[a-zA-Z]{2,}([a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]+)*#*$/ // eslint-disable-line
-        ),
+      avatar: Joi.string().uri().required().regex(REG_EXP_LINK),
     }),
   }),
   updateAvatar,
