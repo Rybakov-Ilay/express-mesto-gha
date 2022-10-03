@@ -2,7 +2,7 @@ const { JWT_SECRET = 'dev-secret' } = process.env;
 const jwt = require('jsonwebtoken');
 const { UnauthorizedError } = require('../erorrs/UnauthorizedError');
 
-module.exports = (req, res, next) => {
+module.exports = (req, res, next) => { // eslint-disable-line
   // const { authorization } = req.headers;
   // if (!authorization || !authorization.startsWith('Bearer ')) {
   //   return next(new UnauthorizedError('Необходима авторизация'));
@@ -12,7 +12,7 @@ module.exports = (req, res, next) => {
   const token = req.cookies.jwt;
 
   if (!token) {
-    return next(new UnauthorizedError('Необходима авторизация'));
+    return next(new UnauthorizedError('Необходима авторизация')); // eslint-disable-line
   }
 
   let payload;
