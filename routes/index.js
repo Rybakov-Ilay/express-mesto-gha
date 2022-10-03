@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { login, createUser } = require('../controllers/users');
+const { login, createUser, logout } = require('../controllers/users');
 const auth = require('../middlewares/auth');
 const { NotFoundError } = require('../erorrs/NotFoundError');
 const usersRouter = require('./users');
@@ -11,9 +11,7 @@ const {
 
 router.post('/signin', validateUserBody, login);
 router.post('/signup', validateAuthentication, createUser);
-router.get('/signout', (req, res) => {
-  res.clearCookie('jwt').send({ message: 'Выход' });
-});
+router.get('/signout', logout);
 router.use(auth);
 router.use(usersRouter);
 router.use(cardsRouter);

@@ -76,6 +76,10 @@ module.exports.login = (req, res, next) => {
     .catch(next);
 };
 
+module.exports.logout = (req, res, next) => {
+  res.clearCookie('jwt').send({ message: 'Выход' }).catch(next);
+};
+
 module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
   const id = req.user._id;
