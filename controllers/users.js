@@ -31,28 +31,30 @@ module.exports.getUser = (req, res, next) => {
 
 module.exports.createUser = (req, res, next) => {
   const { email, password, name, about, avatar } = req.body; // eslint-disable-line
-  User.findOne({ email })
-    .then((user) => {
-      if (user) {
-        throw new ConflictError('Такой email уже есть');
-      } else {
-        return bcrypt.hash(password, 10);
-      }
+  bcrypt.hash(password, 10).then((hashPass) =>
+    User.create({ // eslint-disable-line
+      name,
+      about,
+      avatar,
+      email,
+      password: hashPass,
     })
-    .then((hash) => User.create({ name, about, avatar, email, password: hash })) // eslint-disable-line
-    .then((user) => {
-      res.send({
-        email: user.email,
-        name: user.name,
-        about: user.about,
-        avatar: user.avatar,
-      });
-    })
-    .catch((err) => {
-      err.name === 'ValidationError' // eslint-disable-line
-        ? next(new BadRequestError('Переданы некорректные данные'))
-        : next(err);
-    });
+      .then((user) =>
+        res.send({ // eslint-disable-line
+          email: user.email,
+          name: user.name,
+          about: user.about,
+          avatar: user.avatar,
+        }),
+      ) // eslint-disable-line
+      .catch((err) => {
+        if (err.code === 11000) {
+          next(new ConflictError('Пользователь с таким email уже существует'));
+        } else if (err.name === 'ValidationError') {
+          next(new BadRequestError('Переданы некорректные данные'));
+        } else next(err);
+      }),
+  ); // eslint-disable-line
 };
 
 module.exports.login = (req, res, next) => {
