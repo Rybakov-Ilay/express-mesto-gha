@@ -8,6 +8,7 @@ module.exports = (req, res, next) => {
   //   next(new UnauthorizedError('Необходима авторизация'));
   // }
   // const token = authorization.replace('Bearer ', '');
+
   const token = req.cookies.jwt;
 
   if (!token) {
